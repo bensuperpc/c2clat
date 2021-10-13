@@ -2,10 +2,21 @@
 
 A tool to measure CPU core to core latency (inter-core latency).
 
-Build:
+## Build
 
+### console
 ```console
 g++ -O3 -DNDEBUG -march=native -flto -flto-partition=none c2clat.cpp -o c2clat -pthread
+```
+
+### cmake + ninja
+```console
+./tools/ninja-cmake-builder.sh -DCMAKE_BUILD_TYPE=Release
+```
+
+### Crossplatform [Dockcross](https://github.com/dockcross/dockcross)
+```console
+./tools/dockcross-builder.sh linux-arm64:latest -DCMAKE_BUILD_TYPE=Release
 ```
 
 Example usage:
