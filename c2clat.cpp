@@ -122,6 +122,7 @@ int main(int argc, char *argv[]) {
         << "set xlabel \"CPU\"\n"
         << "set ylabel \"CPU\"\n"
         << "set cblabel \"Latency (ns)\"\n"
+        << "unset key\n"
         << "$data << EOD\n";
   }
 
@@ -140,8 +141,8 @@ int main(int argc, char *argv[]) {
 
   if (plot) {
     std::cout << "EOD\n"
-              << "plot '$data' matrix rowheaders columnheaders using 2:1:3 "
-                 "with image\n";
+              << "plot '$data' matrix rowheaders columnheaders using 2:1:3 with image,"
+              << "'$data' matrix rowheaders columnheaders using 2:1:(sprintf('%g',$3)) with labels\n";
   }
 
   return 0;
