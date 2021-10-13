@@ -29,7 +29,7 @@ Create plot using [gnuplot](http://gnuplot.sourceforge.net/):
 c2clat -p | gnuplot -p
 ```
 
-![Plot of inter-core latency](https://github.com/rigtorp/c2clat/blob/master/c2clat.png)
+![Plot of inter-core latency](https://github.com/bensuperpc/c2clat/blob/main/c2clat.png)
 
 If you want to run on a subset of cores use [taskset](https://www.man7.org/linux/man-pages/man1/taskset.1.html):
 
