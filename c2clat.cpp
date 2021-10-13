@@ -1,10 +1,10 @@
 // © 2020 Erik Rigtorp <erik@rigtorp.se>
 // SPDX-License-Identifier: MIT
-
+// Forked by Bensuperpc <bensuperpc@gmail.com>
 // Measure inter-core one-way data latency
 //
 // Build:
-// g++ -O3 -DNDEBUG c2clat.cpp -o c2clat -pthread
+// g++ -O3 -DNDEBUG -march=native -flto -flto-partition=none c2clat.cpp -o c2clat -pthread
 //
 // Plot results using gnuplot:
 // $ c2clat -p | gnuplot -p
@@ -34,7 +34,9 @@ void pinThread(int cpu) {
 
 int main(int argc, char *argv[]) {
 
-  int nsamples = 1000;
+  const auto nsamples = 4000;
+  const auto samplessize = 100;
+
   bool plot = false;
 
   int opt;
@@ -43,9 +45,9 @@ int main(int argc, char *argv[]) {
     case 'p':
       plot = true;
       break;
-    case 's':
-      nsamples = std::stoi(optarg);
-      break;
+//    case 's':
+//      nsamples = std::stoi(optarg);
+//      break;
     default:
       goto usage;
     }
@@ -54,7 +56,8 @@ int main(int argc, char *argv[]) {
   if (optind != argc) {
   usage:
     std::cerr << "c2clat 1.0.0 © 2020 Erik Rigtorp <erik@rigtorp.se>\n"
-                 "usage: c2clat [-p] [-s number_of_samples]\n"
+                 "c2clat-forked 1.1.0 - 2021 Bensuperpc <bensuperpc@gmail.com>\n"
+                 "usage: c2clat [-p]\n"
                  "\nPlot results using gnuplot:\n"
                  "c2clat -p | gnuplot -p\n";
     exit(1);
@@ -69,7 +72,7 @@ int main(int argc, char *argv[]) {
 
   // enumerate available CPUs
   std::vector<int> cpus;
-  for (int i = 0; i < CPU_SETSIZE; ++i) {
+  for (auto i = 0; i < CPU_SETSIZE; ++i) {
     if (CPU_ISSET(i, &set)) {
       cpus.push_back(i);
     }
@@ -85,8 +88,8 @@ int main(int argc, char *argv[]) {
 
       auto t = std::thread([&] {
         pinThread(cpus[i]);
-        for (int m = 0; m < nsamples; ++m) {
-          for (int n = 0; n < 100; ++n) {
+        for (auto m = 0; m < nsamples; ++m) {
+          for (auto n = 0; n < samplessize; ++n) {
             while (seq1.load(std::memory_order_acquire) != n)
               ;
             seq2.store(n, std::memory_order_release);
@@ -100,7 +103,7 @@ int main(int argc, char *argv[]) {
       for (int m = 0; m < nsamples; ++m) {
         seq1 = seq2 = -1;
         auto ts1 = std::chrono::steady_clock::now();
-        for (int n = 0; n < 100; ++n) {
+        for (auto n = 0; n < samplessize; ++n) {
           seq1.store(n, std::memory_order_release);
           while (seq2.load(std::memory_order_acquire) != n)
             ;
@@ -111,8 +114,8 @@ int main(int argc, char *argv[]) {
 
       t.join();
 
-      data[{i, j}] = rtt / 2 / 100;
-      data[{j, i}] = rtt / 2 / 100;
+      data[{i, j}] = rtt / 4 / samplessize;
+      data[{j, i}] = rtt / 4 / samplessize;
     }
   }
 
