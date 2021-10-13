@@ -57,6 +57,5 @@ jobs:
           submodules: "recursive"
           fetch-depth: 0
       - name: "🛠️ cmake dockcross"
-        run: |
-        chmod +x ./tools/dockcross-builder.sh
-        bash tools/dockcross-builder.sh ${{ matrix.arch_name }}:latest -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        run: chmod +x tools/dockcross-builder.sh && bash tools/dockcross-builder.sh ${{ matrix.arch_name }}:latest -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        
