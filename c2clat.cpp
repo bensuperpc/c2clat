@@ -122,6 +122,7 @@ int main(int argc, char *argv[]) {
   if (plot) {
     std::cout
         << "set title \"Inter-core one-way data latency between CPU cores\"\n"
+        << "set palette rgb 33,13,10\n"
         << "set xlabel \"CPU\"\n"
         << "set ylabel \"CPU\"\n"
         << "set cblabel \"Latency (ns)\"\n"
